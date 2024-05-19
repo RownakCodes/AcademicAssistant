@@ -22,6 +22,97 @@ namespace AcademicAssistant.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> AddBooks()
+        {
+            return View();
+        }
+        public async Task<IActionResult> DeleteBook(string id)
+        {
+
+            var book = await _webDB.Books.Where(c => c.ID == id).FirstOrDefaultAsync();
+            if (book != null)
+            {
+                book.Status = "Inactive";
+                await _webDB.SaveChangesAsync();
+                TempData["PopupScript"] = "<script>alert('Book Deleted');</script>";
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBook(string Title, string Course, string File)
+        {
+            string userID = HttpContext.Request.Cookies["UserID"];
+            if (userID == null || userID == "")
+            {
+                userID = HttpContext.Request.Cookies["AdminID"];
+            }
+            Random random = new Random();
+            if (!string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(File) || string.IsNullOrEmpty(File))
+            {
+                _webDB.Books.Add(new Models.Book
+                {
+                    ID = random.Next(10000, 99999) + "-" + random.Next(10000, 99999) + "-" + random.Next(10000, 99999),
+                    Title = Title,
+                    Course = Course,
+                    FileUrl = File,
+                    DateTime = DateTime.Now,
+                    UserID = userID,
+                    Status = "Active"
+                });
+                await _webDB.SaveChangesAsync();
+                TempData["PopupScript"] = "<script>alert('Your book was created!');</script>";
+            }
+            else
+            {
+                TempData["PopupScript"] = "<script>alert('Insert Title, Course and Link appropriately!');</script>";
+            }
+
+            return RedirectToAction("AddBooks");
+        }
+
+
+
+        [HttpPost] 
+        public async Task<IActionResult> AddComment(string PostID, string Content)
+        {
+
+            string userID = HttpContext.Request.Cookies["UserID"];
+            if (userID == null || userID == "")
+            {
+                userID = HttpContext.Request.Cookies["AdminID"];
+            }
+
+            _webDB.Comments.Add(new Comment
+            {
+                ID = random.Next(10000, 99999) + "-" + random.Next(10000, 99999) + "-" + random.Next(10000, 99999),
+                UserID = userID,
+                PostID = PostID,
+                Content = Content,
+                Status = "Active",
+            });
+
+            await _webDB.SaveChangesAsync();
+            TempData["PopupScript"] = "<script>alert('Comment Added');</script>";
+
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> DeletePost(string id)
+        {
+
+            var post= await _webDB.Posts.Where(c=> c.ID==id).FirstOrDefaultAsync();
+            if (post!=null)
+            {
+                post.Status = "Inactive";
+                _webDB.SaveChangesAsync();
+                TempData["PopupScript"] = "<script>alert('Post Deleted');</script>";
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+
 
         [HttpPost]
         public IActionResult Calculate(List<int> creditHours, List<double> grade, List<string> name )
@@ -51,7 +142,7 @@ namespace AcademicAssistant.Controllers
             // Pass the CGPA to the view
             ViewBag.CGPA = cgpa;
 
-            TempData["PopupScript"] = "<script>alert('Your CGPA is:" + cgpa + " ');</script>";
+            TempData["PopupScript"] = "<script>alert('Your CGPA is:   " + cgpa + " ');</script>";
 
             return RedirectToAction("CalculateCGPA");
         }
@@ -254,6 +345,7 @@ namespace AcademicAssistant.Controllers
                 Password =passwordInput ,        
                 PhoneNumber = phone,        
                 Status = "Active",  
+                AccountType = "User"
             });
 
             await _webDB.SaveChangesAsync();

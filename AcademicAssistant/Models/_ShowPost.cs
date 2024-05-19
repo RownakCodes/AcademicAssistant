@@ -2,6 +2,18 @@
 
 namespace AcademicAssistant.Models
 {
+    public class CommentViewModel
+    {
+        public string ID { get; set; }
+        public string UserID { get; set; }
+        public string PostID { get; set; }
+        public string Content { get; set; }
+        public string Status { get; set; }
+        public DateTime DateTime { get; set; }
+        public string UserName { get; set; }  // New property for UserName
+    }
+
+
     public class _ShowPost
     {
         [Key]
@@ -20,5 +32,6 @@ namespace AcademicAssistant.Models
         public string UserName { get; set; }
         [Required]
         public string Status { get; set; }
+        public List<CommentViewModel> Comments { get; set; }
     }
 }
