@@ -10,10 +10,41 @@ namespace AcademicAssistant.Controllers
         private readonly ILogger<HomeController> _logger;
         WebDbContext _webDB;
 
+
+        public async Task<IActionResult> SeeBooks(string searchTerm)
+        {
+            var booksQuery = from book in _webDB.Books
+                             join user in _webDB.Users on book.UserID equals user.ID
+                             where book.Status == "Active"
+                             select new _ShowBook
+                             {
+                                 ID = book.ID,
+                                 Title = book.Title,
+                                 Course = book.Course,
+                                 FileUrl = book.FileUrl,
+                                 DateTime = book.DateTime,
+                                 UserName = user.Name,
+                                 Status = book.Status,
+                                 UserID = book.UserID
+
+                             };
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                booksQuery = booksQuery.Where(b => b.Title.Contains(searchTerm) || b.Course.Contains(searchTerm));
+            }
+
+            var books = await booksQuery.ToListAsync();
+            return View(books);
+        }
+
+
+
         public IActionResult SignUp()
         {
             return View();
         }
+
         
         public IActionResult LogIn()
         {
@@ -49,8 +80,24 @@ namespace AcademicAssistant.Controllers
                                                 DateTime = post.DateTime,
                                                 UserID = post.UserID,
                                                 UserName = user.Name, // Extracting the username from the Users table
-                                                Status = post.Status
+                                                Status = post.Status,
+                                                Comments = (from comment in _webDB.Comments
+                                                            join commentUser in _webDB.Users on comment.UserID equals commentUser.ID
+                                                            where comment.PostID == post.ID && comment.Status == "Active"
+                                                            select new CommentViewModel
+                                                            {
+                                                                ID = comment.ID,
+                                                                UserID = comment.UserID,
+                                                                PostID = comment.PostID,
+                                                                Content = comment.Content,
+                                                                Status = comment.Status,
+                                                                DateTime = comment.DateTime,
+                                                                UserName = commentUser.Name // Extracting the username from the Users table
+                                                            }).OrderBy(c=>c.DateTime).ToList()
                                             }).ToListAsync();
+
+
+
 
             ViewBag.posts = postsWithUserNames;
 
