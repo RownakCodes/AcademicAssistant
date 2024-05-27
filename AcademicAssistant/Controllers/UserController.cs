@@ -8,24 +8,46 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AcademicAssistant.Controllers
 {
+    /// <summary>
+    /// Controller to manage user-related actions such as creating, updating, and deleting books, posts, and user information.
+    /// </summary>
     public class UserController : Controller
     {
         private static readonly Random random = new Random();
         WebDbContext _webDB;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserController"/> class.
+        /// </summary>
+        /// <param name="webDB">The database context to interact with the database.</param>
         public UserController(WebDbContext webDB)
         {
             _webDB = webDB;
         }
 
+        /// <summary>
+        /// Shows the respective dashboard for each role.
+        /// </summary>
+        /// <returns>The dashboard view.</returns>
         public async Task<IActionResult> UserDashboard()
         {
             return View();
         }
+
+        /// <summary>
+        /// Displays the view to add books for a user.
+        /// </summary>
+        /// <returns>The AddBooks view.</returns
         public async Task<IActionResult> AddBooks()
         {
             return View();
         }
+
+        /// <summary>
+        /// Deletes a book by marking it as inactive.
+        /// </summary>
+        /// <param name="id">The ID of the book to delete.</param>
+        /// <returns>Redirects to the Home index action.</returns>
         public async Task<IActionResult> DeleteBook(string id)
         {
 
@@ -40,6 +62,13 @@ namespace AcademicAssistant.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Creates a new book for the user.
+        /// </summary>
+        /// <param name="Title">The title of the book.</param>
+        /// <param name="Course">The course associated with the book.</param>
+        /// <param name="File">The file URL of the book.</param>
+        /// <returns>Redirects to the AddBooks view.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateBook(string Title, string Course, string File)
         {
@@ -73,7 +102,12 @@ namespace AcademicAssistant.Controllers
         }
 
 
-
+        /// <summary>
+        /// Adds a comment to a post.
+        /// </summary>
+        /// <param name="PostID">The ID of the post to comment on.</param>
+        /// <param name="Content">The content of the comment.</param>
+        /// <returns>Redirects to the Home index action.</returns>
         [HttpPost] 
         public async Task<IActionResult> AddComment(string PostID, string Content)
         {
@@ -98,6 +132,12 @@ namespace AcademicAssistant.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        /// <summary>
+        /// Deletes a post by marking it as inactive.
+        /// </summary>
+        /// <param name="id">The ID of the post to delete.</param>
+        /// <returns>Redirects to the Home index action.</returns>
         public async Task<IActionResult> DeletePost(string id)
         {
 
@@ -112,8 +152,13 @@ namespace AcademicAssistant.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-
+        /// <summary>
+        /// Calculates the CGPA based on the provided credit hours and grades.
+        /// </summary>
+        /// <param name="creditHours">List of credit hours for each course.</param>
+        /// <param name="grade">List of grades for each course.</param>
+        /// <param name="name">List of course names (optional).</param>
+        /// <returns>Redirects to the CalculateCGPA view with the calculated CGPA.</returns>
         [HttpPost]
         public IActionResult Calculate(List<int> creditHours, List<double> grade, List<string> name )
         {
@@ -147,12 +192,23 @@ namespace AcademicAssistant.Controllers
             return RedirectToAction("CalculateCGPA");
         }
 
+        /// <summary>
+        /// Displays the CalculateCGPA view.
+        /// </summary>
+        /// <returns>The CalculateCGPA view.</returns>
         public async Task<IActionResult> CalculateCGPA()
         {
             return View();
         }
 
-
+        /// <summary>
+        /// Updates a post with new content.
+        /// </summary>
+        /// <param name="id">The ID of the post to update.</param>
+        /// <param name="postTitle">The new title of the post.</param>
+        /// <param name="postContent">The new content of the post.</param>
+        /// <param name="postImage">The new image URL of the post.</param>
+        /// <returns>Redirects to the EditPost view with the updated post ID.</returns>
         [HttpPost]
         public async Task<IActionResult> UpdatePost(string id, string postTitle, string postContent, string postImage)
         {
@@ -175,12 +231,14 @@ namespace AcademicAssistant.Controllers
                     TempData["PopupScript"] = "<script>alert('Insert Title and Content appropriately!');</script>";
                 }
             }
-
-
             return RedirectToAction("EditPost", new { id = id });
         }
 
-
+        /// <summary>
+        /// Displays the EditPost view for a specific post.
+        /// </summary>
+        /// <param name="id">The ID of the post to edit.</param>
+        /// <returns>The EditPost view.</returns>
         public async Task<IActionResult> EditPost(string id = "10000-10000-10000")
         {
             var post = await _webDB.Posts.Where(c => c.ID == id).FirstOrDefaultAsync();
@@ -198,6 +256,13 @@ namespace AcademicAssistant.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new post for the user.
+        /// </summary>
+        /// <param name="postTitle">The title of the post.</param>
+        /// <param name="postContent">The content of the post.</param>
+        /// <param name="postImage">The image URL of the post.</param>
+        /// <returns>Redirects to the MakePost view.</returns>
         [HttpPost]
         public async Task<IActionResult> CreatePost(string postTitle, string postContent, string postImage)
         {
@@ -230,13 +295,23 @@ namespace AcademicAssistant.Controllers
             return RedirectToAction("MakePost");
         }
 
+        /// <summary>
+        /// Displays the MakePost view.
+        /// </summary>
+        /// <returns>The MakePost view.</returns>
         public async Task<IActionResult> MakePost()
         {
-
             return View();
         }
 
-
+        /// <summary>
+        /// Updates user information.
+        /// </summary>
+        /// <param name="ID">The ID of the user to update.</param>
+        /// <param name="FullName">The new full name of the user.</param>
+        /// <param name="PhoneNumber">The new phone number of the user.</param>
+        /// <param name="Email">The new email of the user.</param>
+        /// <returns>Redirects to the UserDashboard view.</returns>
         [HttpPost]
         public async Task<IActionResult> UpdateUser(string ID,
                                   string FullName,
@@ -258,11 +333,14 @@ namespace AcademicAssistant.Controllers
             await _webDB.SaveChangesAsync();
            
             return RedirectToAction("UserDashboard");
-
-
         }
 
-
+        /// <summary>
+        /// Logs in a user or admin.
+        /// </summary>
+        /// <param name="emailInput">The email of the user.</param>
+        /// <param name="passwordInput">The password of the user.</param>
+        /// <returns>Redirects to the Home index action if successful, otherwise returns to the Login view with an error.</returns>
         [HttpPost]
         public async Task<IActionResult> LoginUser(
                 string emailInput, string passwordInput
@@ -276,7 +354,6 @@ namespace AcademicAssistant.Controllers
                 TempData["PopupScript"] = script;
                 return RedirectToAction("Login", "Home");
             }
-
 
             CookieOptions options = new CookieOptions();
             options.Expires = DateTime.Now.AddDays(10);
@@ -300,6 +377,11 @@ namespace AcademicAssistant.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        /// <summary>
+        /// Signs out the user or admin by deleting their session cookies.
+        /// </summary>
+        /// <returns>Redirects to the Home index action.</returns>
         public IActionResult SignOut()
         {
             Response.Cookies.Delete("UserID");
@@ -311,6 +393,14 @@ namespace AcademicAssistant.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="nameInput">The name of the user.</param>
+        /// <param name="emailInput">The email of the user.</param>
+        /// <param name="phone">The phone number of the user.</param>
+        /// <param name="passwordInput">The password of the user.</param>
+        /// <returns>Redirects to the Home index action if successful, otherwise returns to the SignUp view with an error.</returns>
         [HttpPost]
         public async Task<IActionResult> SignUpUser(string nameInput, string emailInput,string phone,  string passwordInput)
         {
@@ -351,8 +441,5 @@ namespace AcademicAssistant.Controllers
             await _webDB.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
         }
-
-
-        
     }
 }

@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 
+    // Retrieving user information from cookies
     string UserID = Context.Request.Cookies["UserID"];
     string AdminID = Context.Request.Cookies["AdminID"];
     string Name = Context.Request.Cookies["Name"];
@@ -43,11 +44,9 @@
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                                                     <li><a class="dropdown-item" asp-action="EditPost" asp-controller="User" asp-route-id="@post.ID">Edit</a></li>
-
                                                     <li><a class="dropdown-item" href="#" onclick="confirmDelete('@Url.Action("DeletePost", "User", new { id = post.ID })')">Delete Post</a></li>
                                                 </ul>
                                             }
-
                                         </div>
                                     </div>
                                     <div class="post-content">
@@ -100,8 +99,6 @@
                                 }
                             }
                         </script>
-
-
                     </div>
                 </div>
             </div>

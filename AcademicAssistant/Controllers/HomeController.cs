@@ -5,12 +5,19 @@ using System.Diagnostics;
 
 namespace AcademicAssistant.Controllers
 {
+    /// <summary>
+    /// Represents the controller for managing home-related actions.
+    /// </summary>
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         WebDbContext _webDB;
 
-
+        /// <summary>
+        /// Displays the page for seeing books.
+        /// </summary>
+        /// <param name="searchTerm">The search term for filtering books.</param>
+        /// <returns>The view containing the books.</returns>
         public async Task<IActionResult> SeeBooks(string searchTerm)
         {
             var booksQuery = from book in _webDB.Books
@@ -39,13 +46,19 @@ namespace AcademicAssistant.Controllers
         }
 
 
-
+        /// <summary>
+        /// Displays the sign-up page.
+        /// </summary>
+        /// <returns>The view containing the sign-up form.</returns>
         public IActionResult SignUp()
         {
             return View();
         }
 
-        
+        /// <summary>
+        /// Displays the log-in page.
+        /// </summary>
+        /// <returns>The view containing the log-in form.</returns>
         public IActionResult LogIn()
         {
             string UserID = HttpContext.Request.Cookies["UserID"];
@@ -60,12 +73,22 @@ namespace AcademicAssistant.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="webDB">The web database context.</param>
         public HomeController(ILogger<HomeController> logger, WebDbContext webDB)
         {
             _logger = logger;
             _webDB = webDB;
         }
 
+
+        /// <summary>
+        /// Displays the home page with posts and comments.
+        /// </summary>
+        /// <returns>The view containing the home page.</returns>
         public async Task<IActionResult> Index()
         {
             var postsWithUserNames = await (from post in _webDB.Posts
@@ -103,17 +126,29 @@ namespace AcademicAssistant.Controllers
 
             return View();
         }
+
+        /// <summary>
+        /// Displays the about us page.
+        /// </summary>
+        /// <returns>The view containing the about us content.</returns>
         public IActionResult AboutUs()
         {
             return View();
         }
 
-
+        /// <summary>
+        /// Displays the privacy page.
+        /// </summary>
+        /// <returns>The view containing the privacy policy.</returns>
         public IActionResult Privacy()
         {
             return View();
         }
 
+        /// <summary>
+        /// Displays the error page.
+        /// </summary>
+        /// <returns>The view containing the error details.</returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
